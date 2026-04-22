@@ -1,15 +1,9 @@
-# Netlify build + functions config.
-# Static site, no build step. Functions live in netlify/functions and run on
-# Netlify's Node 20 runtime (fetch is built-in).
+# Netlify build + caching config. Pure static site; no functions, no build step.
 
 [build]
   publish = "."
-  functions = "netlify/functions"
 
-[functions]
-  node_bundler = "esbuild"
-
-# Long-cache static assets; the HTML stays fresh so content edits ship fast.
+# Long-cache static assets; HTML stays fresh so content edits ship immediately.
 [[headers]]
   for = "/assets/*"
   [headers.values]
@@ -19,10 +13,3 @@
   for = "/*.html"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
-
-# Clean URL for the enquiry endpoint if you ever want it (the form already
-# uses /.netlify/functions/subscribe, so this is optional).
-[[redirects]]
-  from = "/api/subscribe"
-  to = "/.netlify/functions/subscribe"
-  status = 200

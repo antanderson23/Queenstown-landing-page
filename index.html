@@ -1003,50 +1003,56 @@ img { display: block; max-width: 100%; }
     </div>
 
     <div>
-      <form class="enquiry-form" id="enquiry-form" novalidate>
-        <div class="field-row">
-          <div class="field">
-            <label for="first_name">First name</label>
-            <input id="first_name" name="first_name" type="text" autocomplete="given-name" required>
+      <!-- MailerLite embedded form (ID 185481874614781884, account 1899431).
+           Submission is handled by MailerLite's webforms.min.js via JSONP;
+           this form stays visually on-brand with our own CSS. -->
+      <div id="mlb2-40289265" class="ml-form-embedContainer ml-subscribe-form ml-subscribe-form-40289265">
+        <form class="ml-block-form enquiry-form row-form" id="enquiry-form"
+              action="https://assets.mailerlite.com/jsonp/1899431/forms/185481874614781884/subscribe"
+              data-code=""
+              method="post"
+              novalidate>
+          <div class="field-row">
+            <div class="field ml-field-group ml-validate-required">
+              <label for="first_name">First name</label>
+              <input id="first_name" name="fields[name]" type="text" class="form-control" autocomplete="given-name" aria-required="true" required>
+            </div>
+            <div class="field ml-field-group ml-validate-required">
+              <label for="last_name">Last name</label>
+              <input id="last_name" name="fields[last_name]" type="text" class="form-control" autocomplete="family-name" aria-required="true" required>
+            </div>
           </div>
-          <div class="field">
-            <label for="last_name">Last name</label>
-            <input id="last_name" name="last_name" type="text" autocomplete="family-name" required>
+          <div class="field ml-field-group ml-field-email ml-validate-email ml-validate-required">
+            <label for="email">Email</label>
+            <input id="email" name="fields[email]" type="email" class="form-control" autocomplete="email" aria-required="true" required>
           </div>
-        </div>
-        <div class="field">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" autocomplete="email" required>
-        </div>
-        <div class="field">
-          <label for="phone">Phone</label>
-          <input id="phone" name="phone" type="tel" autocomplete="tel">
-        </div>
-        <div class="field">
-          <label for="interest">I'm interested in</label>
-          <select id="interest" name="interest">
-            <option>A 3-bedroom residence</option>
-            <option>A 4-bedroom residence</option>
-            <option>Either — I'd like to see options</option>
-            <option>Short-term rental performance</option>
-            <option>A private viewing</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="message">Message (optional)</label>
-          <textarea id="message" name="message" rows="3"></textarea>
-        </div>
-        <!-- Honeypot -->
-        <div class="field-hp" aria-hidden="true">
-          <label>Leave this field empty</label>
-          <input name="company" type="text" tabindex="-1" autocomplete="off">
-        </div>
-        <button type="submit" class="enquiry-submit" id="enquiry-submit">Submit enquiry</button>
-        <div id="enquiry-success" class="enquiry-success" style="display:none;">
+          <div class="field ml-field-group">
+            <label for="phone">Phone</label>
+            <input id="phone" name="fields[phone]" type="tel" class="form-control" autocomplete="tel">
+          </div>
+          <div class="field ml-field-group">
+            <label for="interest">I'm interested in</label>
+            <select id="interest" name="fields[interest]" class="form-control">
+              <option>A 3-bedroom residence</option>
+              <option>A 4-bedroom residence</option>
+              <option>Either — I'd like to see options</option>
+              <option>Short-term rental performance</option>
+              <option>A private viewing</option>
+            </select>
+          </div>
+          <div class="field ml-field-group">
+            <label for="message">Message (optional)</label>
+            <textarea id="message" name="fields[message]" class="form-control" rows="3"></textarea>
+          </div>
+          <input type="hidden" name="ml-submit" value="1">
+          <input type="hidden" name="anticsrf" value="true">
+          <button type="submit" class="enquiry-submit primary" id="enquiry-submit">Submit enquiry</button>
+          <button disabled="disabled" style="display: none;" type="button" class="enquiry-submit loading">Sending…</button>
+        </form>
+        <div id="enquiry-success" class="enquiry-success row-success" style="display:none;">
           Thanks — we'll be in touch within one working day with floor plans and next steps.
         </div>
-        <div id="enquiry-error" class="enquiry-error" style="display:none;" role="alert"></div>
-      </form>
+      </div>
     </div>
   </div>
 </section>
@@ -1102,70 +1108,23 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-// Enquiry form — submits to Netlify Function which forwards to MailerLite
-(function () {
-  const form = document.getElementById('enquiry-form');
-  const submit = document.getElementById('enquiry-submit');
-  const successEl = document.getElementById('enquiry-success');
-  const errorEl = document.getElementById('enquiry-error');
-  if (!form) return;
+// MailerLite success handler: called by webforms.min.js once the subscription is accepted.
+// The function name is tied to the wrapper ID (mlb2-40289265) so don't rename without
+// updating the container ID too.
+function ml_webform_success_40289265() {
+  var form = document.getElementById('enquiry-form');
+  var success = document.getElementById('enquiry-success');
+  if (form) form.style.display = 'none';
+  if (success) success.style.display = 'block';
+}
+</script>
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    errorEl.style.display = 'none';
-    successEl.style.display = 'none';
-
-    // Honeypot
-    if (form.querySelector('input[name="company"]').value.trim() !== '') {
-      successEl.style.display = 'block';
-      form.reset();
-      return;
-    }
-
-    const payload = {
-      first_name: form.first_name.value.trim(),
-      last_name: form.last_name.value.trim(),
-      email: form.email.value.trim(),
-      phone: form.phone.value.trim(),
-      interest: form.interest.value,
-      message: form.message.value.trim(),
-      source: '26 Hallenstein Street landing page'
-    };
-
-    if (!payload.first_name || !payload.last_name || !payload.email) {
-      errorEl.textContent = 'Please fill in first name, last name and email.';
-      errorEl.style.display = 'block';
-      return;
-    }
-
-    submit.disabled = true;
-    const originalLabel = submit.textContent;
-    submit.textContent = 'Sending…';
-
-    try {
-      const res = await fetch('/.netlify/functions/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || ('Request failed (' + res.status + ')'));
-      }
-
-      form.reset();
-      successEl.style.display = 'block';
-      // Hide the form once we've confirmed success so the success message stands alone.
-      form.querySelectorAll('.field, .field-row, .enquiry-submit').forEach(el => { el.style.display = 'none'; });
-    } catch (err) {
-      errorEl.textContent = 'Sorry, something went wrong sending your enquiry. Please try again, or email ant@rosefernhomes.co.nz directly.';
-      errorEl.style.display = 'block';
-      submit.disabled = false;
-      submit.textContent = originalLabel;
-    }
-  });
-})();
+<!-- MailerLite embedded form runtime: intercepts the form submit, posts via JSONP
+     to MailerLite's subscribe endpoint, calls ml_webform_success_40289265 on success. -->
+<script src="https://groot.mailerlite.com/js/w/webforms.min.js?vb397d78ebaa8a0f631d35384c46d781b" type="text/javascript"></script>
+<script>
+  // MailerLite's own "form loaded" ping. Matches the snippet MailerLite produces.
+  fetch("https://assets.mailerlite.com/jsonp/1899431/forms/185481874614781884/takel");
 </script>
 </body>
 </html>
